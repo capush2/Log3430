@@ -64,7 +64,7 @@ class TestCRUD(unittest.TestCase):
         mock_modify_groups_file.return_value = True
 
         crud = CRUD()
-        crud.add_new_group(self.no_mem_groups_data["0"]["name"], self.no_mem_groups_data["0"]["Trust"],
+        crud.add_new_group("groupName", self.no_mem_groups_data["0"]["Trust"],
                            ["alex@gmail.com", "mark@mail.com"])
 
         print("Test 2 executed")
@@ -226,11 +226,13 @@ class TestCRUD(unittest.TestCase):
         self.assertFalse(crud.update_users("0", "badField", "newGroup"))
 
     @patch("crud.CRUD.modify_groups_file")
+    @patch("crud.CRUD.read_users_file")
     @patch("crud.CRUD.read_groups_file")
     def test_update_groups_Passes_correct_data_to_modify_groups_file(
-            self, mock_read_groups_file, mock_modify_groups_file
+            self, mock_read_groups_file, mock_read_user_file, mock_modify_groups_file
     ):
         mock_read_groups_file.return_value = self.no_mem_groups_data
+        mock_read_user_file.return_value = self.new_users_data
         mock_modify_groups_file.return_value = {}
         crud = CRUD()
 
@@ -374,5 +376,155 @@ class TestCRUD(unittest.TestCase):
     ###########################################
     #               CUSTOM TEST               #
     ###########################################
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_returns_false_when_Date_of_last_seen_message_is_invalid(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
 
-    # TODO Test coverage doit etre > 80 commencer avec test_update_users_specific_case
+        date = datetime.utcfromtimestamp(1596444800.0)
+
+        print("Custom test 0 executed")
+        self.assertFalse(crud.update_users("0", "Date_of_last_seen_message", date.strftime('%Y-%m-%d')))
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_Passes_correct_data_to_modify_users_file_when_field_is_Date_of_last_seen_message(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        modified_user = {"0": self.new_users_data["0"].copy()}
+        date = datetime.utcfromtimestamp(1598918400.0)
+        modified_user["0"]["Date_of_last_seen_message"] = 1598918400.0
+        crud.update_users("0", "Date_of_last_seen_message", date.strftime('%Y-%m-%d'))
+
+        print("Custom test 1 executed")
+        mock_modify_users_file.assert_called_once_with(modified_user)
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_returns_false_when_Date_of_first_seen_message_is_invalid(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        date = datetime.utcfromtimestamp(1599444800.0)
+
+        print("Custom test 2 executed")
+        self.assertFalse(crud.update_users("0", "Date_of_first_seen_message", date.strftime('%Y-%m-%d')))
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_Passes_correct_data_to_modify_users_file_when_field_is_Date_of_first_seen_message(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        modified_user = {"0": self.new_users_data["0"].copy()}
+        date = datetime.utcfromtimestamp(1596758400.0)
+        modified_user["0"]["Date_of_first_seen_message"] = 1596758400.0
+        crud.update_users("0", "Date_of_first_seen_message", date.strftime('%Y-%m-%d'))
+
+        print("Custom test 3 executed")
+        mock_modify_users_file.assert_called_once_with(modified_user)
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_returns_false_when_Trust_is_invalid(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        print("Custom test 4 executed")
+        self.assertFalse(crud.update_users("0", "Trust", 120))
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_Passes_correct_data_to_modify_users_file_when_field_is_Trust(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        modified_user = {"0": self.new_users_data["0"].copy()}
+        modified_user["0"]["Trust"] = 1
+        crud.update_users("0", "Trust", 1)
+
+        print("Custom test 5 executed")
+        mock_modify_users_file.assert_called_once_with(modified_user)
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_returns_false_when_SpamN_is_invalid(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        print("Custom test 6 executed")
+        self.assertFalse(crud.update_users("0", "SpamN", -1))
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    def test_update_users_Passes_correct_data_to_modify_users_file_when_field_is_SpamN(
+            self, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        modified_user = {"0": self.new_users_data["0"].copy()}
+        modified_user["0"]["SpamN"] = 1
+        crud.update_users("0", "SpamN", 1)
+
+        print("Custom test 7 executed")
+        mock_modify_users_file.assert_called_once_with(modified_user)
+
+    @patch("crud.CRUD.modify_users_file")
+    @patch("crud.CRUD.read_users_file")
+    @patch("crud.CRUD.read_groups_file")
+    def test_update_users_Passes_correct_data_to_modify_users_file_when_field_is_Groups(
+            self, mock_read_groups_file, mock_read_users_file, mock_modify_users_file
+    ):
+        mock_read_groups_file.return_value = self.filled_groups_data
+        self.new_users_data["0"]["Groups"] = []
+        mock_read_users_file.return_value = self.new_users_data
+        mock_modify_users_file.return_value = {}
+        crud = CRUD()
+
+        modified_user = {"0": self.new_users_data["0"].copy()}
+        modified_user["0"]["Groups"] = []
+        crud.update_users("0", "Groups", [])
+
+        print("Custom test 8 executed")
+        mock_modify_users_file.assert_called_once_with(modified_user)
+
+    @patch("crud.CRUD.modify_groups_file")
+    @patch("crud.CRUD.read_groups_file")
+    def test_update_groups_Passes_correct_data_to_modify_groups_file_when_field_is_Trust(
+            self, mock_read_groups_file, mock_modify_groups_file
+    ):
+        mock_read_groups_file.return_value = self.no_mem_groups_data
+        mock_modify_groups_file.return_value = {}
+        crud = CRUD()
+
+        modified_group = {"0": self.no_mem_groups_data["0"].copy()}
+        modified_group["0"]["Trust"] = 1
+        crud.update_groups("0", "Trust", 1)
+
+        print("Custom test 9 executed")
+        mock_modify_groups_file.assert_called_once_with(modified_group)
