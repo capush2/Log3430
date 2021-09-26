@@ -354,7 +354,7 @@ class TestCRUD(unittest.TestCase):
         mock_modify_groups_file.return_value = {}
         crud = CRUD()
 
-        print("Test 25 executed")
+        print("Test 26 executed")
         self.assertFalse(crud.remove_group_member("0", "badUser"))
 
     @patch("crud.CRUD.modify_groups_file")
@@ -368,7 +368,7 @@ class TestCRUD(unittest.TestCase):
 
         crud.remove_group_member("0", "steve@gmail.com")
 
-        print("Test 24 executed")
+        print("Test 27 executed")
         mock_modify_groups_file.assert_called_once_with(self.no_mem_groups_data)
 
     ###########################################
