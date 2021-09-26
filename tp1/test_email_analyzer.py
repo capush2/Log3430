@@ -90,6 +90,62 @@ class TestEmailAnalyzer(unittest.TestCase):
         mock_load_dict.return_value = self.vocab
         self.assertEqual(eman.spam_ham_subject_prob(self.subject), self.spam_ham_subject_prob_expected)
 
-    ###########################################
-    #               CUSTOM TEST               #
-    ###########################################
+    @patch("email_analyzer.EmailAnalyzer.load_dict")
+    def test_spam_ham_body_prob_Returns_expected_probability_with_word_in_spam_dictionary(self, mock_load_dict):
+        """
+        Il faut mocker la fonction "load_dict"
+        Il faut vérifier que probabilité est calculée correctement avec un body qui contient un mot du spam dictionary
+        """
+        eman = EmailAnalyzer()
+        mock_load_dict.return_value = {
+            "p_body_spam": {"one": 10, "two": {}, "three": {}, "four": {}, "five": {}, "six": {}, "seven": {}, "eight": {}, "nine": {}},
+            "p_body_ham": {"a": {}, "b": {}, "c": {}, "d": {}, "e": {}, "f": {}, "g": {}, "h": {}, "i": {}}
+        }
+        values = eman.spam_ham_body_prob({"one"})
+        self.assertLess(abs(values[0] - 5.925), 0.0001)
+        self.assertLess(abs(values[1] - 0.04075), 0.000001)
+
+    @patch("email_analyzer.EmailAnalyzer.load_dict")
+    def test_spam_ham_body_prob_Returns_expected_probability_with_word_in_ham_dictionary(self, mock_load_dict):
+        """
+        Il faut mocker la fonction "load_dict"
+        Il faut vérifier que probabilité est calculée correctement avec un body qui contient un mot du ham dictionary
+        """
+        eman = EmailAnalyzer()
+        mock_load_dict.return_value = {
+            "p_body_spam": {"one": {}, "two": {}, "three": {}, "four": {}, "five": {}, "six": {}, "seven": {}, "eight": {}, "nine": {}},
+            "p_body_ham": {"a": 10, "b": {}, "c": {}, "d": {}, "e": {}, "f": {}, "g": {}, "h": {}, "i": {}}
+        }
+        values = eman.spam_ham_body_prob({"a"})
+        self.assertLess(abs(values[0] - 0.05925), 0.000001)
+        self.assertLess(abs(values[1] - 4.075), 0.0001)
+
+    @patch("email_analyzer.EmailAnalyzer.load_dict")
+    def test_spam_ham_subject_prob_Returns_expected_probability_with_word_in_spam_dictionary(self, mock_load_dict):
+        """
+        Il faut mocker la fonction "load_dict"
+        Il faut vérifier que probabilité est calculée correctement avec un body qui contient un mot du spam dictionary
+        """
+        eman = EmailAnalyzer()
+        mock_load_dict.return_value = {
+            "p_sub_spam": {"one": 10, "two": {}, "three": {}, "four": {}, "five": {}, "six": {}, "seven": {}, "eight": {}, "nine": {}},
+            "p_sub_ham": {"a": {}, "b": {}, "c": {}, "d": {}, "e": {}, "f": {}, "g": {}, "h": {}, "i": {}}
+        }
+        values = eman.spam_ham_subject_prob({"one"})
+        self.assertLess(abs(values[0] - 5.925), 0.0001)
+        self.assertLess(abs(values[1] - 0.04075), 0.000001)
+
+    @patch("email_analyzer.EmailAnalyzer.load_dict")
+    def test_spam_ham_subject_prob_Returns_expected_probability_with_word_in_ham_dictionary(self, mock_load_dict):
+        """
+        Il faut mocker la fonction "load_dict"
+        Il faut vérifier que probabilité est calculée correctement avec un body qui contient un mot du ham dictionary
+        """
+        eman = EmailAnalyzer()
+        mock_load_dict.return_value = {
+            "p_sub_spam": {"one": {}, "two": {}, "three": {}, "four": {}, "five": {}, "six": {}, "seven": {}, "eight": {}, "nine": {}},
+            "p_sub_ham": {"a": 10, "b": {}, "c": {}, "d": {}, "e": {}, "f": {}, "g": {}, "h": {}, "i": {}}
+        }
+        values = eman.spam_ham_subject_prob({"a"})
+        self.assertLess(abs(values[0] - 0.05925), 0.000001)
+        self.assertLess(abs(values[1] - 4.075), 0.0001)
