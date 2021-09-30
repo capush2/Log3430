@@ -1,6 +1,16 @@
 {
-    "p_sub_spam": {},
-    "p_sub_ham": {},
-    "p_body_spam": {},
-    "p_body_ham": {}
+    "p_sub_spam": {
+        "not": 1.0
+    },
+    "p_sub_ham": {
+        "spam": 1.0
+    },
+    "p_body_spam": {
+        "not": 0.5,
+        "spam": 0.5
+    },
+    "p_body_ham": {
+        "not": 0.75,
+        "spam": 0.25
+    }
 }
