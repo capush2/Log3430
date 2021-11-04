@@ -69,7 +69,7 @@ class VocabularyCreator:
                 is_spam = True
 
             # Analyze the subject 
-            subject = self.clean_text(subject)
+            subject = self.clean_text(subject, min_occ)
             if is_spam:
                 for wd in subject:
                     total_occ_spam_sub += 1
@@ -88,7 +88,7 @@ class VocabularyCreator:
                         occ_ham_sub[wd] += 1
 
             # Analyze the body
-            body = self.clean_text(body)
+            body = self.clean_text(body, min_occ)
             if is_spam:
                 for wd in body:
                     total_occ_spam_bod += 1
