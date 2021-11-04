@@ -18,8 +18,9 @@ class VocabularyCreator:
         Sortie: le dictionnaire des probabilité pour chaque mot
         '''
         proba_dict = {}
-        for wd in data:
-            nb_occ = data[wd]
+        copy = data.copy()
+        for wd in copy:
+            nb_occ = copy[wd]
             if nb_occ < min_occ:
                 data.pop(wd)
                 total -= nb_occ

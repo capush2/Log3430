@@ -19,7 +19,7 @@ def evaluate(use_log_prob=False, use_log_combine=False, clean_option=0):
     i = 0
     email_count = len(new_emails["dataset"])
 
-    print("Evaluating emails ")
+    print("Evaluating emails \n")
     for e_mail in new_emails["dataset"]:
         i += 1
         print("\rEmail " + str(i) + "/" + str(email_count), end="")

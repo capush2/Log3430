@@ -8,7 +8,7 @@ class EmailAnalyzer:
     """Classe pour classifier les e-mails comme spam ou non spam (ham)"""
 
     def __init__(self):
-        self.vocab    = "vocabulary.json"
+        self.vocab = "vocabulary.json"
         self.cleaning = TextCleaning()
         self.voc_data = {}
 
@@ -21,31 +21,33 @@ class EmailAnalyzer:
         '''
         # Clean email's subject and body
         email_subject = self.clean_text(subject_orig, clean_option)
-        email_body    = self.clean_text(body_orig, clean_option)
+        email_body = self.clean_text(body_orig, clean_option)
 
         # Get the spam/ham probabilities
-        if use_log_prob :
+        if use_log_prob:
             p_subject_spam, p_subject_ham = self.spam_ham_log_subject_prob(email_subject)
-            p_body_spam,    p_body_ham    = self.spam_ham_log_body_prob(email_body)
-        else :
+            p_body_spam, p_body_ham = self.spam_ham_log_body_prob(email_body)
+        else:
             p_subject_spam, p_subject_ham = self.spam_ham_subject_prob(email_subject)
-            p_body_spam,    p_body_ham    = self.spam_ham_body_prob(email_body)
-
+            p_body_spam, p_body_ham = self.spam_ham_body_prob(email_body)
 
         # Compute the merged probabilities
         k = 0.5
-        if use_log_combine :
-                a = k * math.log10(p_subject_spam)
-                b = (1-k) * math.log10(p_body_spam)
+        if use_log_combine:
+            a = 0 if p_subject_spam == 0 else k * math.log10(p_subject_spam)
+            b = 0 if p_body_spam == 0 else (k - 1) * math.log10(p_body_spam)
             p_spam = math.pow(10, a + b)
-            p_ham = math.pow(10, k * math.log10(p_subject_ham) + (1-k) * math.log10(p_body_ham))
-        else :
-            p_spam = k * p_subject_spam + (1-k) * p_body_spam
-            p_ham  = k * p_subject_ham + (1-k) * p_body_ham
+
+            a = 0 if p_subject_ham == 0 else k * math.log10(p_subject_ham)
+            b = 0 if p_body_ham == 0 else (k - 1) * math.log10(p_body_ham)
+            p_ham = math.pow(10, a + b)
+        else:
+            p_spam = k * p_subject_spam + (1 - k) * p_body_spam
+            p_ham = k * p_subject_ham + (1 - k) * p_body_ham
 
         # Decide is the email is spam or ham
         if p_spam > p_ham:
-            return True 
+            return True
         else:
             return False
 
@@ -57,10 +59,9 @@ class EmailAnalyzer:
         que email body est ham.
         '''
         p_spam = 1.0
-        p_ham  = 1.0
+        p_ham = 1.0
 
         voc_data = self.load_dict()
-
 
         # Walk the text to compute the probability
         for word in body:
@@ -69,7 +70,7 @@ class EmailAnalyzer:
                 p_spam *= voc_data["p_body_spam"][word]
             else:
                 p_spam *= 1.0 / (len(voc_data["p_body_spam"]) + 1.0)
-            
+
             # Check the ham probability
             if word in voc_data["p_body_ham"]:
                 p_ham *= voc_data["p_body_ham"][word]
@@ -77,8 +78,8 @@ class EmailAnalyzer:
                 p_ham *= 1.0 / (len(voc_data["p_body_ham"]) + 1.0)
 
         p_spam *= 0.5925
-        p_ham  *= 0.4075
-        
+        p_ham *= 0.4075
+
         return (p_spam, p_ham)
 
     def spam_ham_log_body_prob(self, body):
@@ -120,7 +121,7 @@ class EmailAnalyzer:
         que email subject est ham.
         '''
         p_spam = 1.0
-        p_ham  = 1.0
+        p_ham = 1.0
 
         voc_data = self.load_dict()
 
@@ -131,7 +132,7 @@ class EmailAnalyzer:
                 p_spam *= voc_data["p_sub_spam"][word]
             else:
                 p_spam *= 1.0 / (len(voc_data["p_sub_spam"]) + 1.0)
-            
+
             # Check the ham probability
             if word in voc_data["p_sub_ham"]:
                 p_ham *= voc_data["p_sub_ham"][word]
@@ -139,10 +140,10 @@ class EmailAnalyzer:
                 p_ham *= 1.0 / (len(voc_data["p_sub_ham"]) + 1.0)
 
         p_spam *= 0.5925
-        p_ham  *= 0.4075
-        
+        p_ham *= 0.4075
+
         return (p_spam, p_ham)
-    
+
     def spam_ham_log_subject_prob(self, body):
         '''
         Description: fonction pour calculer la probabilite
@@ -173,13 +174,13 @@ class EmailAnalyzer:
         log_p_ham += math.log10(0.4075)
 
         return math.pow(10, log_p_spam), math.pow(10, log_p_ham)
-    
-    def clean_text(self, text, clean_option): #pragma: no cover
+
+    def clean_text(self, text, clean_option):  # pragma: no cover
         return self.cleaning.clean_text(text, clean_option)
 
-    def load_dict(self): #pragma: no cover
+    def load_dict(self):  # pragma: no cover
         # Open vocabulary 
         with open(self.vocab) as json_data:
             vocabu = json.load(json_data)
-        
+
         return vocabu
