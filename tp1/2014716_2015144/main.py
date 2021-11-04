@@ -1,5 +1,6 @@
 import csv
 import json
+
 from vocabulary_creator import VocabularyCreator
 from renege import RENEGE
 from email_analyzer import EmailAnalyzer
@@ -57,20 +58,19 @@ def exec_test_set():
             print(test_case)
             # 1. Creation de vocabulaire.
             vocab = VocabularyCreator()
-            vocab.create_vocab(test_case[2], test_case[3])
+            vocab.create_vocab(int(test_case[2]), int(test_case[3]))
 
             # 2. Classification des emails et initialisation de utilisateurs et groupes.
             renege = RENEGE()
-            renege.classify_emails(test_case[0], test_case[1], test_case[2])
+            renege.classify_emails(bool(test_case[0]), bool(test_case[1]), int(test_case[2]))
 
             # 3. Evaluation de performance du modele avec la fonction evaluate()
-            evaluate(test_case[0], test_case[1], test_case[2])
+            evaluate(bool(test_case[0]), bool(test_case[1]), int(test_case[2]))
 
 
 
 
 if __name__ == "__main__":
-
     exec_test_set()
 
 

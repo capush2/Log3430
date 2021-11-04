@@ -35,7 +35,9 @@ class EmailAnalyzer:
         # Compute the merged probabilities
         k = 0.5
         if use_log_combine :
-            p_spam = math.pow(10, k * math.log10(p_subject_spam) + (1-k) * math.log10(p_body_spam))
+                a = k * math.log10(p_subject_spam)
+                b = (1-k) * math.log10(p_body_spam)
+            p_spam = math.pow(10, a + b)
             p_ham = math.pow(10, k * math.log10(p_subject_ham) + (1-k) * math.log10(p_body_ham))
         else :
             p_spam = k * p_subject_spam + (1-k) * p_body_spam
