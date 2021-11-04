@@ -172,8 +172,8 @@ class EmailAnalyzer:
 
         return math.pow(10, log_p_spam), math.pow(10, log_p_ham)
     
-    def clean_text(self, text): #pragma: no cover
-        return self.cleaning.clean_text(text)
+    def clean_text(self, text, clean_option): #pragma: no cover
+        return self.cleaning.clean_text(text, clean_option)
 
     def load_dict(self): #pragma: no cover
         # Open vocabulary 

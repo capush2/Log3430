@@ -1,10 +1,11 @@
+import csv
 import json
 from vocabulary_creator import VocabularyCreator
 from renege import RENEGE
 from email_analyzer import EmailAnalyzer
 
 
-def evaluate(use_log_prob, use_log_combine, clean_option):
+def evaluate(use_log_prob=False, use_log_combine=False, clean_option=0):
     tp = 0
     tn = 0
     fp = 0
@@ -44,15 +45,33 @@ def evaluate(use_log_prob, use_log_combine, clean_option):
     return True
 
 
+def exec_test_set():
+    first_line = True
+    with open('SpamHam3.csv', newline='') as csvfile:
+        test_set_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for test_case in test_set_reader:
+            if first_line:
+                first_line = False
+                continue
+
+            print(test_case)
+            # 1. Creation de vocabulaire.
+            vocab = VocabularyCreator()
+            vocab.create_vocab(test_case[2], test_case[3])
+
+            # 2. Classification des emails et initialisation de utilisateurs et groupes.
+            renege = RENEGE()
+            renege.classify_emails(test_case[0], test_case[1], test_case[2])
+
+            # 3. Evaluation de performance du modele avec la fonction evaluate()
+            evaluate(test_case[0], test_case[1], test_case[2])
+
+
+
+
 if __name__ == "__main__":
 
-    # 1. Creation de vocabulaire.
-    vocab = VocabularyCreator()
-    vocab.create_vocab()
+    exec_test_set()
 
-    # 2. Classification des emails et initialisation de utilisateurs et groupes.
-    renege = RENEGE()
-    renege.classify_emails()
 
-    # 3. Evaluation de performance du modele avec la fonction evaluate()
-    evaluate()
+
