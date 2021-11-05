@@ -32,8 +32,12 @@ class EmailAnalyzer:
             p_body_spam, p_body_ham = self.spam_ham_body_prob(email_body)
 
         # Compute the merged probabilities
+        # On pose k = 0.5 ici car c'est ce qui était utilisé dans l'ancienne version.
         k = 0.5
         if use_log_combine:
+            # Ici, on force le a et le b à 0 pour ne pas faire un log de 0.
+            # p_sub_spam par exemple ne devrait jamais etre 0 mais quand on fait le 10**-600 à l'étape precedante,
+            # les float arrondissent à 0...
             a = 0 if p_subject_spam == 0 else k * math.log10(p_subject_spam)
             b = 0 if p_body_spam == 0 else (k - 1) * math.log10(p_body_spam)
             p_spam = math.pow(10, a + b)
@@ -97,6 +101,7 @@ class EmailAnalyzer:
         # Walk the text to compute the probability
         for word in body:
             # Check the spam probability
+            # Modification avec la loi des log de la formule
             if word in voc_data["p_body_spam"]:
                 log_p_spam += math.log10(voc_data["p_body_spam"][word])
             else:
@@ -157,6 +162,7 @@ class EmailAnalyzer:
         voc_data = self.load_dict()
 
         # Walk the text to compute the probability
+        # Modification avec la loi des log de la formule
         for word in body:
             # Check the spam probability
             if word in voc_data["p_sub_spam"]:

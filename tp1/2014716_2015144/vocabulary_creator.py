@@ -18,6 +18,8 @@ class VocabularyCreator:
         Sortie: le dictionnaire des probabilité pour chaque mot
         '''
         proba_dict = {}
+        # Création d'une copie pour itérer, ensuite on vérifie que la condition minimale d'occurence est remplie.
+        # Si elle n l'est pas, on diminue le total et on retire l'entrée de la map.
         copy = data.copy()
         for wd in copy:
             nb_occ = copy[wd]
@@ -25,6 +27,7 @@ class VocabularyCreator:
                 data.pop(wd)
                 total -= nb_occ
 
+        # Le reste du calcul s'effectue sur la map raccourcie
         for wd in data:
             proba_dict[wd] = data[wd] / total
 

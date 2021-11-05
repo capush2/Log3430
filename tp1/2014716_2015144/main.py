@@ -29,6 +29,7 @@ def evaluate(use_log_prob=False, use_log_combine=False, clean_option=0):
         body = new_email["Body"]
         spam = new_email["Spam"]
 
+        # Passage des paramètres
         if (analyzer.is_spam(subject, body, use_log_prob, use_log_combine, clean_option)) and (spam == "true"):
             tp += 1
         if (not (analyzer.is_spam(subject, body, use_log_prob, use_log_combine, clean_option))) and (spam == "false"):
@@ -48,6 +49,7 @@ def evaluate(use_log_prob=False, use_log_combine=False, clean_option=0):
 
 def exec_test_set():
     first_line = True
+    # Ouvrir le fichier csv, passer la première ligne et executer une fois par cas de test
     with open('SpamHam3.csv', newline='') as csvfile:
         test_set_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for test_case in test_set_reader:
