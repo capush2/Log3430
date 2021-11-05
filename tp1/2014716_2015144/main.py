@@ -38,7 +38,7 @@ def evaluate(use_log_prob=False, use_log_combine=False, clean_option=0):
         if (not (analyzer.is_spam(subject, body, use_log_prob, use_log_combine, clean_option))) and (spam == "true"):
             fn += 1
         total += 1
-    
+
     print("")
     print("\nAccuracy: ", round((tp + tn) / (tp + tn + fp + fn), 2))
     print("Precision: ", round(tp / (tp + fp), 2))
@@ -62,16 +62,13 @@ def exec_test_set():
 
             # 2. Classification des emails et initialisation de utilisateurs et groupes.
             renege = RENEGE()
-            renege.classify_emails(bool(test_case[0]), bool(test_case[1]), int(test_case[2]))
+            renege.classify_emails(bool(test_case[0]), bool(test_case[1]), int(test_case[3]))
 
             # 3. Evaluation de performance du modele avec la fonction evaluate()
-            evaluate(bool(test_case[0]), bool(test_case[1]), int(test_case[2]))
+            evaluate(bool(test_case[0]), bool(test_case[1]), int(test_case[3]))
 
 
 
 
 if __name__ == "__main__":
     exec_test_set()
-
-
-
