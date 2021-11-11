@@ -2,6 +2,7 @@ import json
 import re
 from datetime import timezone, datetime
 
+
 class CRUD:
     """
     Classe pour realiser la fonctionalite CRUD.
@@ -9,61 +10,48 @@ class CRUD:
 
     def __init__(self):
         # Init the lookup tables
-        self.users_lookup  = {}
+        self.users_lookup = {}
         self.groups_lookup = {}
 
         # Set the files' name
         self.users_file = "users.json"
         self.groups_file = "groups.json"
 
-        # Load data from the files
-        try:
-            self.users_data = self.read_users_file()
-            self.groups_data = self.read_groups_file()
-        except:
-            # We could not load the data
-            self.users_data = {}
-            self.groups_data = {}            
-            pass
-        # Fill the lookup tables, the name are the tables' keys
-        for key in self.users_data:
-            self.users_lookup[self.users_data[key]["name"]] = key
-        for key in self.groups_data:
-            self.groups_lookup[self.groups_data[key]["name"]] = key
-
-        # Add default group if it does not exist
-        if "default" not in self.groups_data:
-            self.add_new_group("default", 50, [])
+        self.users_data = {}
+        self.groups_data = {}
 
     ##*************UTILS***************
     '''
     Description: retourne un id unique pour un nouvel utilisateur
     Sortie: un id unique pour un nouvel utilisateur
     '''
+
     def get_new_user_id(self):
         new_id = 0
         while str(new_id) in self.users_data:
             new_id += 1
-        
+
         return str(new_id)
 
     '''
     Description: retourne un id unique pour un nouveau groupe
     Sortie: un id unique pour un nouveau groupe
     '''
+
     def get_new_group_id(self):
         new_id = 0
         while str(new_id) in self.groups_data:
             new_id += 1
-        
+
         return str(new_id)
-    
+
     """
     Description: Fonction pour convertir la date en unix-timestamp
     Sortie: float, la date en format unix-timestamp
     """
-    def convert_to_unix(self, date):    
-        dt   = datetime.strptime(date, '%Y-%m-%d')
+
+    def convert_to_unix(self, date):
+        dt = datetime.strptime(date, '%Y-%m-%d')
         date = dt.replace(tzinfo=timezone.utc).timestamp()
         return date
 
@@ -79,14 +67,14 @@ class CRUD:
 
         # Check the unicity of the email address
         if user_email in self.users_lookup:
-            return False
+            return self.get_users_data()
 
         # Check the email's format
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", user_email):
-            return False
+            return self.get_users_data()
 
         # Init last and first message date, as the date of creation
-        dt   = datetime.strptime(date, '%Y-%m-%d')
+        dt = datetime.strptime(date, '%Y-%m-%d')
         date = dt.replace(tzinfo=timezone.utc).timestamp()
 
         # Create the new user
@@ -101,13 +89,14 @@ class CRUD:
             "Groups": ["default"]
         }
         self.users_lookup[user_email] = new_id
-        default_id   = self.get_group_id("default")
+        default_id = self.get_group_id("default")
         default_list = self.get_groups_data(default_id, "List_of_members")
         default_list.append(user_email)
         self.update_groups(default_id, "List_of_members", default_list)
 
         # Success
-        return self.modify_users_file(self.users_data)
+        self.modify_users_file(self.users_data)
+        return self.get_users_data()
 
     def add_new_group(self, name, trust, members_list):
         '''
@@ -124,9 +113,9 @@ class CRUD:
         # Check if all users exist
         for user in members_list:
             if user not in self.users_lookup:
-                return False 
+                return False
 
-        # Create the new group
+                # Create the new group
         new_id = self.get_new_group_id()
         self.groups_data[new_id] = {
             "name": name,
@@ -144,7 +133,7 @@ class CRUD:
 
         except RuntimeError:
             return False
-        #print(self.groups_data)
+        # print(self.groups_data)
         # Success
         return self.modify_groups_file(self.groups_data)
 
@@ -187,7 +176,6 @@ class CRUD:
             return False
 
         return user[field]
-        
 
     def get_groups_data(self, group_id, field):
         '''
@@ -264,19 +252,19 @@ class CRUD:
 
         # Check existence
         if user_id not in self.users_data:
-            return False
+            return self.get_users_data()
 
         # Get user and check field validity
         if field not in self.users_data[user_id]:
-            return False
+            return self.get_users_data()
 
         print("OK")
         try:
             # Update data
             if field == "name":
                 if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", data):
-                    return False
-                
+                    return self.get_users_data()
+
                 # Update the data and the lookup table
                 user_name = self.get_user_data(user_id, "name")
                 del self.users_lookup[user_name]
@@ -288,28 +276,28 @@ class CRUD:
                 last_msg = self.get_user_data(user_id, "Date_of_last_seen_message")
                 # Check if the last message is newer than the previous last message
                 if date < last_msg:
-                    return False
+                    return self.get_users_data()
 
                 self.users_data[user_id]["Date_of_last_seen_message"] = date
-                    
+
             elif field == "Date_of_first_seen_message":
                 date = self.convert_to_unix(data)
                 first_msg = self.get_user_data(user_id, "Date_of_first_seen_message")
                 # Check if the first message is older than the previous first message
                 if date > first_msg:
-                    return False
+                    return self.get_users_data()
 
                 self.users_data[user_id]["Date_of_first_seen_message"] = date
-                    
+
             elif field == "Trust":
                 if data < 0 or data > 100:
-                    return False
-                
+                    return self.get_users_data()
+
                 self.users_data[user_id]["Trust"] = data
 
             elif field == "SpamN" or field == "HamN":
                 if data < 0:
-                    return False 
+                    return self.get_users_data()
 
                 self.users_data[user_id][field] = data
 
@@ -317,21 +305,21 @@ class CRUD:
                 # Check if the groups exist
                 for group in data:
                     if group not in self.groups_lookup:
-                        return False
+                        return self.get_users_data()
 
                 # Update user's groups
-                self.users_data[user_id]["Groups"] = data                  
-            
+                self.users_data[user_id]["Groups"] = data
+
             else:
                 # This case should have been caught earlier and we should never 
                 # execute this line (field not in self.users_data[user_id])
-                return False 
+                return self.get_users_data()
 
         except RuntimeError:
-            return False
-        
-        return self.modify_users_file(self.users_data)
+            return self.get_users_data()
 
+        self.modify_users_file(self.users_data)
+        return self.get_users_data()
 
     def update_groups(self, group_id, field, data):
         '''
@@ -357,24 +345,24 @@ class CRUD:
             # Update data
             if field == "name":
                 if len(data) < 1 or len(data) > 64:
-                    return False 
+                    return False
 
                 old_name = self.groups_data[group_id]["name"]
                 # Update user's groups
                 for user in self.users_data.values():
                     if old_name in user["Groups"]:
                         user["Groups"].remove(old_name)
-                        user["Groups"].append(data)                   
+                        user["Groups"].append(data)
 
-                # Update group name
+                        # Update group name
                 del self.groups_lookup[self.groups_data[group_id]["name"]]
                 self.groups_data[group_id]["name"] = data
-                self.groups_lookup[data] = group_id            
+                self.groups_lookup[data] = group_id
 
             elif field == "Trust":
                 if data < 0 or data > 100:
                     return False
-                
+
                 self.groups_data[group_id]["Trust"] = data
 
             elif field == "List_of_members":
@@ -382,13 +370,13 @@ class CRUD:
                 for email in data:
                     if email not in self.users_lookup:
                         return False
-                    
+
                 self.groups_data[group_id]["List_of_members"] = data
 
             else:
                 # This case should have been caught earlier and we should never 
                 # execute this line (field not in self.groups_data[group_id])
-                return False 
+                return False
 
         except RuntimeError:
             return False
@@ -406,19 +394,21 @@ class CRUD:
 
         # Check existence       
         if user_id not in self.users_data:
-            return False 
-        
+            return self.get_users_data()
+
         try:
-            user_name  = self.get_user_data(user_id, "name")
-            
+            user_name = self.get_user_data(user_id, "name")
+
             # Remove user 
             del self.users_data[user_id]
             del self.users_lookup[user_name]
 
         except RuntimeError:
-            return False
 
-        return self.modify_users_file(self.users_data)
+            return self.get_users_data()
+
+        self.modify_users_file(self.users_data)
+        return self.get_users_data()
 
     def remove_user_group(self, user_id, group_name):
         '''
@@ -426,12 +416,12 @@ class CRUD:
         auquel appartient un utilisateur.
         Sortie: bool, 'True' pour succes, 'False' dans le cas de failure.
         '''
-        user_id  = str(user_id)
+        user_id = str(user_id)
 
         # Check existence       
         if user_id not in self.users_data:
-            return False 
-        
+            return self.get_users_data()
+
         try:
             # Get names 
             user_name = self.get_user_data(user_id, "name")
@@ -439,15 +429,17 @@ class CRUD:
             # Check if the user is in the group
             groups = self.get_user_data(user_id, "Groups")
             if group_name not in groups:
-                return False
+                return self.get_users_data()
 
             # Remove group
             self.users_data[user_id]["Groups"].remove(group_name)
 
         except RuntimeError:
-            return False
 
-        return self.modify_users_file(self.users_data)
+            return self.get_users_data()
+
+        self.modify_users_file(self.users_data)
+        return self.get_users_data()
 
     def remove_group(self, group_id):
         '''
@@ -458,7 +450,7 @@ class CRUD:
 
         # Check existence       
         if group_id not in self.groups_data:
-            return False 
+            return False
 
         try:
             # Get names 
@@ -470,7 +462,7 @@ class CRUD:
 
         except RuntimeError:
             return False
-        
+
         return self.modify_groups_file(self.groups_data)
 
     def remove_group_member(self, group_id, member):
@@ -483,7 +475,7 @@ class CRUD:
 
         # Check existence       
         if group_id not in self.groups_data:
-            return False 
+            return False
 
         if member not in self.groups_data[group_id]["List_of_members"]:
             return False
@@ -492,3 +484,8 @@ class CRUD:
         self.groups_data[group_id]["List_of_members"].remove(member)
 
         return self.modify_groups_file(self.groups_data)
+
+    ##***********GET***********************
+
+    def get_users_data(self):
+        return self.users_data
