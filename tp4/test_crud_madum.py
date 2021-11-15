@@ -53,7 +53,7 @@ class TestCRUDMadum(unittest.TestCase):
             "Groups": ["default"],
         }
 
-        self.oracle = [
+        self.update_fields = [
             {
                 "field": "name",
                 "in": "updated@gmail.com",
@@ -123,8 +123,8 @@ class TestCRUDMadum(unittest.TestCase):
         self.assertEqual(crud.add_new_user(self.users_data_add["name"], "2020-08-08"), oracle)
 
     def u(self, crud, oracle, i):
-        oracle["1"][self.oracle[i]["field"]] = self.oracle[i]["new"]
-        self.assertEqual(crud.update_users("1", self.oracle[i]["field"], self.oracle[i]["in"]), oracle)
+        oracle["1"][self.update_fields[i]["field"]] = self.update_fields[i]["new"]
+        self.assertEqual(crud.update_users("1", self.update_fields[i]["field"], self.update_fields[i]["in"]), oracle)
 
     def r(self, crud, oracle):
         oracle.pop("0")
