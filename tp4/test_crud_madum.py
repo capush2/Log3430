@@ -1,9 +1,9 @@
-# TODO Test stuff baby
 import copy
 
-from crud import CRUD
 import unittest
 from unittest.mock import patch
+
+from crud import CRUD
 
 
 class TestCRUDMadum(unittest.TestCase):
@@ -110,7 +110,7 @@ class TestCRUDMadum(unittest.TestCase):
     # On test les 4 transformateurs add_new_user, update_users, remove_user, remove_user_group dans tous les ordres
     # 4! = 24 test cases
 
-    # A -> add_new_users
+    # A -> add_new_user
     # U -> update_users
     # R -> remove_users
     # G -> remove_user_group
