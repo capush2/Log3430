@@ -1,1 +1,1 @@
-{}
+{"1": {"name": "updateName@gmail.com", "Trust": 100, "SpamN": 0, "HamN": 20, "Date_of_first_seen_message": 1596844800.0, "Date_of_last_seen_message": 1596844800.0, "Groups": ["group2"]}, "2": {"name": "rmGroupName@gmail.com", "Trust": 100, "SpamN": 0, "HamN": 20, "Date_of_first_seen_message": 1596844800.0, "Date_of_last_seen_message": 1596844800.0, "Groups": []}, "0": {"name": "addName@gmail.com", "Trust": 50, "SpamN": 0, "HamN": 0, "Date_of_first_seen_message": 1596844800.0, "Date_of_last_seen_message": 1596844800.0, "Groups": ["default"]}}

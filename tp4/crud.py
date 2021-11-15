@@ -17,8 +17,28 @@ class CRUD:
         self.users_file = "users.json"
         self.groups_file = "groups.json"
 
+        # On modifie le constructeur pour instancier les attributs à vide
         self.users_data = {}
-        self.groups_data = {}
+        self.users_groups = {}
+
+        # Load data from the files
+        try:
+            self.users_data = self.read_users_file()
+            self.groups_data = self.read_groups_file()
+        except:
+            # We could not load the data
+            self.users_data = {}
+            self.groups_data = {}
+            pass
+        # Fill the lookup tables, the name are the tables' keys
+        for key in self.users_data:
+            self.users_lookup[self.users_data[key]["name"]] = key
+        for key in self.groups_data:
+            self.groups_lookup[self.groups_data[key]["name"]] = key
+
+        # Add default group if it does not exist
+        if "default" not in self.groups_data:
+            self.add_new_group("default", 50, [])
 
     ##*************UTILS***************
     '''
