@@ -4,20 +4,20 @@ from renege import RENEGE
 from email_analyzer import EmailAnalyzer
 
 
-def evaluate():
+def evaluate(test_set_name="test_set.json"):
     tp = 0
     tn = 0
     fp = 0
     fn = 0
     total = 0
     analyzer = EmailAnalyzer()
-    with open("test_set.json") as email_file:
+    with open(test_set_name) as email_file:
         new_emails = json.load(email_file)
 
     i = 0
     email_count = len(new_emails["dataset"])
 
-    print("Evaluating emails ")
+    print("\nEvaluating emails ")
     for e_mail in new_emails["dataset"]:
         i += 1
         print("\rEmail " + str(i) + "/" + str(email_count), end="")
@@ -41,7 +41,7 @@ def evaluate():
     print("\nAccuracy: ", round((tp + tn) / (tp + tn + fp + fn), 2))
     print("Precision: ", round(tp / (tp + fp), 2))
     print("Recall: ", round(tp / (tp + fn), 2))
-    return True
+    return round((tp + tn) / (tp + tn + fp + fn), 2)
 
 
 if __name__ == "__main__":
